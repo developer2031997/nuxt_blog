@@ -170,7 +170,7 @@ console.log("outside filteredPosts", filteredPosts.value);
 
 const fetchArticles = async () => {
   try {
-    const data = await queryContent("posts").find();
+    const data = await queryContent().where({ _path: /^\/posts\// }).find()
     console.log("data", data);
     articles.value = data;
     filteredPosts.value = data;
