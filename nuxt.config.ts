@@ -1,20 +1,44 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: false },
   ssr: true,
-  css: [
-    // '~~/layout/main.css',
-    "@/assets/css/tailwind.css",
-  ],
+
+  // ✅ Enable document-driven mode for Nuxt Content (optional, helps with structure)
+  content: {
+    documentDriven: true,
+  },
+
+  // ✅ Ensure static generation works properly
+  nitro: {
+    prerender: {
+      crawlLinks: true, // ✅ Will follow <a> links to pre-render more pages
+      routes: [
+        "/", // home
+        "/posts", // posts list
+        // You can add static routes here if needed
+      ],
+      failOnError: false,
+    },
+  },
+  // ✅ Required for static content to build correctly
+  // generate: {
+  //   fallback: true, // fallback for 404
+  // },
+
+  devtools: { enabled: false },
+
+  css: ["@/assets/css/tailwind.css"],
+
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
     },
   },
+
   build: {
     transpile: [],
   },
+
   modules: [
     "@nuxt/content",
     "@nuxtjs/google-fonts",
@@ -22,17 +46,18 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@vite-pwa/nuxt",
   ],
+
   components: true,
+
   googleFonts: {
     families: {
       Poppins: [300, 400, 500, 600, 700],
     },
-    // display: 'swap', // Optional: ensures text remains visible during webfont load
   },
-  content: {},
+
   plugins: [],
 
-  // ✅ PWA Config
+  // ✅ PWA Support
   pwa: {
     registerType: "autoUpdate",
     manifest: {
