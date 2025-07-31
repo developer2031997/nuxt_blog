@@ -143,7 +143,7 @@
   </div>
 </template>
 
-<script setup>
+<!-- <script setup>
 useHead({
   title: "Nuxt Content Medical Blog",
 });
@@ -168,19 +168,25 @@ const subCategories = ref({
 });
 console.log("outside filteredPosts", filteredPosts.value);
 
-// Use actualPath in all queries
-
 const fetchArticles = async () => {
   try {
-    const { data: posts } = await useAsyncData("posts", () =>
-      queryContent("posts").sort({ date: -1 }).find()
+    // const data = await queryContent("posts").find();
+    // console.log("data", data);
+    // articles.value = data;
+    // filteredPosts.value = data;
+
+    const { data: allArticles } = await useAsyncData("posts", () =>
+      queryContent("posts").find()
     );
 
-    articles.value = posts.value;
-    filteredPosts.value = posts.value;
-    loading.value = false;
+    const articles = ref(allArticles.value || []);
+    const filteredPosts = ref([...articles.value]);
+
     loading.value = false;
     console.log("Inside filteredPosts", filteredPosts.value);
+
+    // const allTags = articles.value.flatMap((article) => article.tags || []);
+    // categories.value = [...new Set(allTags)];
 
     const allTags = articles.value.flatMap((article) => article.tags || []);
     categories.value = [...new Set(allTags)];
@@ -361,7 +367,124 @@ const clearFilter = () => {
   search.value = "";
 };
 
-onMounted(fetchArticles);
+// onMounted(fetchArticles);
+</script> -->
+
+<script setup async>
+useHead({
+  title: "Nuxt Content Medical Blog",
+});
+
+import { ref, computed, watch } from "vue";
+import { useAsyncData, queryContent } from "#imports";
+
+// Reactive data
+const search = ref("");
+const selectedFilter = ref("");
+const selectedCategory = ref("");
+const selectedSubCategory = ref("");
+const categories = ref([]);
+const subCategories = ref({
+  health: ["Nutrition", "Exercise", "Mental Health"],
+  wellness: ["Yoga", "Meditation", "Lifestyle"],
+  medicine: ["Immunology", "Pharmacology", "Diagnostics"],
+});
+const noDataFound = ref(false);
+const loading = ref(true);
+
+// Fetch articles using useAsyncData at top level
+const { data: allArticles } = await useAsyncData("posts", () =>
+  queryContent("posts").find()
+);
+
+// Assign fetched data
+const articles = ref(allArticles.value || []);
+const filteredPosts = ref([...articles.value]);
+
+// Extract tags as categories
+const allTags = articles.value.flatMap((a) => a.tags || []);
+categories.value = [...new Set(allTags)];
+
+loading.value = false;
+
+// Watch search
+watch(search, (newValue) => {
+  selectedCategory.value = ""; // Reset category
+  const searchTerm = newValue.toLowerCase().trim();
+
+  filteredPosts.value = searchTerm
+    ? articles.value.filter(
+        (article) =>
+          article.title.toLowerCase().includes(searchTerm) ||
+          (article.tags &&
+            article.tags.some((tag) => tag.toLowerCase().includes(searchTerm)))
+      )
+    : [...articles.value];
+
+  noDataFound.value = filteredPosts.value.length === 0;
+});
+
+const applyFilter = () => {
+  let tempPosts = [...articles.value];
+
+  if (selectedCategory.value) {
+    tempPosts = tempPosts.filter((article) =>
+      article.tags?.some((tag) => tag.includes(selectedCategory.value))
+    );
+  }
+
+  if (selectedSubCategory.value) {
+    tempPosts = tempPosts.filter((article) =>
+      article.tags?.some((tag) =>
+        tag.includes(selectedSubCategory.value.toLowerCase())
+      )
+    );
+  }
+
+  switch (selectedFilter.value) {
+    case "dateasc":
+      tempPosts.sort(
+        (a, b) =>
+          new Date(`${a.date} ${a.time}`) - new Date(`${b.date} ${b.time}`)
+      );
+      break;
+    case "datedesc":
+      tempPosts.sort(
+        (a, b) =>
+          new Date(`${b.date} ${b.time}`) - new Date(`${a.date} ${a.time}`)
+      );
+      break;
+    case "alphabetasc":
+      tempPosts.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case "alphabetdesc":
+      tempPosts.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+  }
+
+  filteredPosts.value = tempPosts;
+  noDataFound.value = filteredPosts.value.length === 0;
+};
+
+const serchPost = (e) => {
+  e.preventDefault();
+};
+
+const clearFilter = () => {
+  filteredPosts.value = [...articles.value];
+  selectedCategory.value = "";
+  selectedSubCategory.value = "";
+  selectedFilter.value = "";
+  search.value = "";
+  noDataFound.value = false;
+};
+
+const isCategoryDisabled = computed(() => search.value.trim().length > 0);
+
+const getCategoryCount = (category) =>
+  articles.value.filter(
+    (article) => article.tags && article.tags.includes(category)
+  ).length;
 </script>
 
 <style>
