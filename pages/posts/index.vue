@@ -167,7 +167,6 @@ const subCategories = ref({
   medicine: [categories.value],
 });
 console.log("outside filteredPosts", filteredPosts.value);
-import { queryContent } from "#content";
 
 const fetchArticles = async () => {
   try {
