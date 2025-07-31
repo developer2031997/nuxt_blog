@@ -12,9 +12,10 @@ export default defineNuxtConfig({
     prerender: {
       crawlLinks: true, // ✅ Will follow <a> links to pre-render more pages
       routes: [
-        "/", // home
-        "/posts", // posts list
-        // You can add static routes here if needed
+        "/", //homepage
+        "/about", // About page
+        "/contact", // Contact page
+        "/posts", // Blog index
       ],
       failOnError: false,
     },
