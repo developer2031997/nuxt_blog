@@ -176,7 +176,7 @@ const fetchArticles = async () => {
   try {
     // remove trailing slash from path
 
-    const { data: post } = await useAsyncData("post", () =>
+    const { data } = await useAsyncData("post", () =>
       queryContent().where({ _path: actualPath }).findOne()
     );
 
