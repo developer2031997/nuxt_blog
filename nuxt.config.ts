@@ -18,7 +18,6 @@ export default defineNuxtConfig({
       ],
       failOnError: false,
     },
-    preset: "node",
   },
   // ✅ Required for static content to build correctly
   generate: {
