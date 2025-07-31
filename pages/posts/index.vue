@@ -150,6 +150,7 @@ useHead({
 
 import { useRoute } from "vue-router";
 const route = useRoute();
+const actualPath = route.path.replace(/\/$/, "");
 
 const search = ref("");
 const articles = ref([]);
@@ -174,7 +175,6 @@ console.log("outside filteredPosts", filteredPosts.value);
 const fetchArticles = async () => {
   try {
     // remove trailing slash from path
-    const actualPath = route.path.replace(/\/$/, "");
 
     const { data: post } = await useAsyncData("post", () =>
       queryContent().where({ _path: actualPath }).findOne()
