@@ -77,7 +77,7 @@
     </div>
     <hr />
     <hr />
-    <div class="flex flex-wrap m-4" v-if="filteredPosts">
+    <div class="flex flex-wrap m-4" v-if="filteredPosts.length">
       <ArticleCard
         v-for="article in filteredPosts"
         :key="article._id"
