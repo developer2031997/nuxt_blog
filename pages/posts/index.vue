@@ -148,6 +148,9 @@ useHead({
   title: "Nuxt Content Medical Blog",
 });
 
+import { useRoute } from "vue-router";
+const route = useRoute();
+
 const search = ref("");
 const articles = ref([]);
 const filteredPosts = ref([]);
