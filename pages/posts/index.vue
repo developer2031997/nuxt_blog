@@ -170,7 +170,12 @@ console.log("outside filteredPosts", filteredPosts.value);
 
 const fetchArticles = async () => {
   try {
-    const data = await queryContent("posts").find();
+    // remove trailing slash from path
+    const actualPath = route.path.replace(/\/$/, "");
+
+    const { data: post } = await useAsyncData("post", () =>
+      queryContent().where({ _path: actualPath }).findOne()
+    );
 
     console.log("data", data);
     articles.value = data;
