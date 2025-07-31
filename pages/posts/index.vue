@@ -168,19 +168,21 @@ const subCategories = ref({
 });
 console.log("outside filteredPosts", filteredPosts.value);
 
+import { useRoute } from "vue-router";
+const route = useRoute();
+const actualPath = route.path.replace(/\/$/, "");
+
+// Use actualPath in all queries
+
 const fetchArticles = async () => {
   try {
-    const data1 = await queryContent("posts").find();
-    console.log("data1 :", data1);
-
-    const { data: posts } = await useAsyncData("posts", () =>
-      queryContent("posts").find()
+    const { post } = await useAsyncData(`post-${actualPath}`, () =>
+      queryContent().where({ _path: actualPath }).findOne()
     );
 
-    console.log("posts", posts.value);
-    articles.value = posts.value;
-    filteredPosts.value = posts.value;
-
+    console.log("data", post);
+    articles.value = post;
+    filteredPosts.value = post;
     loading.value = false;
     console.log("Inside filteredPosts", filteredPosts.value);
 

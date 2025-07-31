@@ -95,12 +95,21 @@
 <script setup>
 const { slug } = useRoute().params;
 const doc = ref(null);
+import { useRoute } from "vue-router";
+const route = useRoute();
+
+// Remove trailing slash (fixes refresh errors)
+const actualPath = route.path.replace(/\/$/, "");
 
 const fetchDoc = async () => {
-  const { data } = await useAsyncData(`doc-${slug}`, () =>
+  const { data1 } = await useAsyncData(`doc-${slug}`, () =>
     $fetch(`/posts/${slug}`)
   );
-  doc.value = data.value;
+
+  // Fetch the markdown content at build time (good for static)
+  const { data: doc } = await useAsyncData(`doc-${actualPath}`, () =>
+    queryContent().where({ _path: actualPath }).findOne()
+  );
 };
 
 onMounted(fetchDoc);
