@@ -21,9 +21,9 @@ export default defineNuxtConfig({
     preset: "node",
   },
   // ✅ Required for static content to build correctly
-  // generate: {
-  //   fallback: true, // fallback for 404
-  // },
+  generate: {
+    fallback: true, // fallback for 404
+  },
 
   devtools: { enabled: false },
 
