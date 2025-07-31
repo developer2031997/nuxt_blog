@@ -148,10 +148,6 @@ useHead({
   title: "Nuxt Content Medical Blog",
 });
 
-import { useRoute } from "vue-router";
-const route = useRoute();
-const actualPath = route.path.replace(/\/$/, "");
-
 const search = ref("");
 const articles = ref([]);
 const filteredPosts = ref([]);
@@ -171,18 +167,18 @@ const subCategories = ref({
   medicine: [categories.value],
 });
 console.log("outside filteredPosts", filteredPosts.value);
+import { queryContent } from "#content";
 
 const fetchArticles = async () => {
   try {
-    // remove trailing slash from path
-
-    const { data } = await useAsyncData("post", () =>
-      queryContent().where({ _path: actualPath }).findOne()
+    const { data: posts } = await useAsyncData("posts", () =>
+      queryContent("posts").find()
     );
 
-    console.log("data", data);
-    articles.value = data;
-    filteredPosts.value = data;
+    console.log("posts", posts.value);
+    articles.value = posts.value;
+    filteredPosts.value = posts.value;
+
     loading.value = false;
     console.log("Inside filteredPosts", filteredPosts.value);
 
